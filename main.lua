@@ -51,3 +51,72 @@ local sheetOptions =
 }
 
 local objectSheet = graphics.newImageSheet( "gameObjects.png", sheetOptions )
+
+-- Initialize variables
+local lives = 3
+local score = 0
+local died = false
+
+local asteroidsTable = {}
+
+local ship
+local gameLoopTimer
+local livesText
+local scoreText
+
+-- Set up display groups
+local backGroup = display.newGroup()  -- Display group for the background image
+local mainGroup = display.newGroup()  -- Display group for the ship, asteroids, lasers, etc.
+local uiGroup = display.newGroup()    -- Display group for UI objects like the score
+
+
+-- Load the background
+local background = display.newImageRect( backGroup, "background.png", 800, 1400 )
+background.x = display.contentCenterX
+background.y = display.contentCenterY
+
+ship = display.newImageRect( mainGroup, objectSheet, 4, 98, 79 )
+ship.x = display.contentCenterX
+ship.y = display.contentHeight - 100
+physics.addBody( ship, { radius=30, isSensor=true } )
+ship.myName = "ship"
+
+-- Display lives and score
+livesText = display.newText( uiGroup, "Lives: " .. lives, 200, 80, native.systemFont, 36 )
+scoreText = display.newText( uiGroup, "Score: " .. score, 400, 80, native.systemFont, 36 )
+
+-- Hide the status bar
+display.setStatusBar( display.HiddenStatusBar )
+
+local function updateText()
+    livesText.text = "Lives: " .. lives
+    scoreText.text = "Score: " .. score
+end
+
+-- asteroid creation function
+local function createAsteroid()
+
+  local newAsteroid = display.newImageRect( mainGroup, objectSheet, 1, 102, 85 )
+  table.insert( asteroidsTable, newAsteroid )
+  physics.addBody( newAsteroid, "dynamic", { radius=40, bounce=0.8 } )
+  newAsteroid.myName = "asteroid"
+
+  local whereFrom = math.random( 3 )
+
+  if ( whereFrom == 1 ) then
+    -- From the left
+    newAsteroid.x = -60
+    newAsteroid.y = math.random( 500 )
+    newAsteroid:setLinearVelocity( math.random( 40,120 ), math.random( 20,60 ) )
+  elseif ( whereFrom == 2 ) then
+    -- From the top
+    newAsteroid.x = math.random( display.contentWidth )
+    newAsteroid.y = -60
+    newAsteroid:setLinearVelocity( math.random( -40,40 ), math.random( 40,120 ) )
+  elseif ( whereFrom == 3 ) then
+    -- From the right
+    newAsteroid.x = display.contentWidth + 60
+    newAsteroid.y = math.random( 500 )
+    newAsteroid:setLinearVelocity( math.random( -120,-40 ), math.random( 20,60 ) )
+  end
+end
