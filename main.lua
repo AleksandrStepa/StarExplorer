@@ -50,6 +50,7 @@ local sheetOptions =
     },
 }
 
+
 local objectSheet = graphics.newImageSheet( "gameObjects.png", sheetOptions )
 
 -- Initialize variables
@@ -96,7 +97,14 @@ end
 -- asteroid creation function
 local function createAsteroid()
 
-  local newAsteroid = display.newImageRect( mainGroup, objectSheet, 1, 102, 85 )
+  local typeAsterioid = math.random( 3 )
+
+  local newAsteroid = display.newImageRect( mainGroup, objectSheet,
+    typeAsterioid,
+    sheetOptions['frames'][typeAsterioid]['width'],
+    sheetOptions['frames'][typeAsterioid]['height']
+  )
+
   table.insert( asteroidsTable, newAsteroid )
   physics.addBody( newAsteroid, "dynamic", { radius=40, bounce=0.8 } )
   newAsteroid.myName = "asteroid"
